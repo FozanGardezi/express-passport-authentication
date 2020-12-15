@@ -1,0 +1,28 @@
+version: '2.2'
+
+services:
+    backend:
+      build: 
+        context: backend
+        dockerfile: Dockerfile
+      ports:
+      - "8000:8000"
+      depends_on:
+      - postgres
+      environment:
+        LOGIN_EMAIL: $LOGIN_EMAIL
+        LOGIN_PASSWORD: $LOGIN_PASSWORD
+
+    postgres:
+      build: postgres/
+      ports: 
+      - 5432:5432
+      volumes:
+      - ./db_data/:/var/lib/postgresql/data
+      environment:
+        POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+    adminer:
+      image: adminer
+      restart: always
+      ports:
+        - 8080:8080
