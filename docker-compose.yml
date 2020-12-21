@@ -1,26 +1,36 @@
-version: '2.2'
+version: '3.2'
 
 services:
+    postgres:
+        build: postgres/
+        user: postgres
+        ports: 
+        - 5432:5432
+        volumes:
+        - ./db_data/:/var/lib/postgresql/data
+        environment:
+          POSTGRES_PASSWORD: thekillerbot
+          POSTGES_DB: database_development
+          POSTGRES_USER: fozan
     backend:
       build: 
         context: backend
         dockerfile: Dockerfile
+      command: sh ./docker-entrypoint.sh
+      links:
+      - postgres
       ports:
       - "8000:8000"
+      #restart: always
       depends_on:
       - postgres
       environment:
         LOGIN_EMAIL: $LOGIN_EMAIL
         LOGIN_PASSWORD: $LOGIN_PASSWORD
+        DATABASE_URL: postgres://fozan:pass@postgres:5432/dev_database
 
-    postgres:
-      build: postgres/
-      ports: 
-      - 5432:5432
-      volumes:
-      - ./db_data/:/var/lib/postgresql/data
-      environment:
-        POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+    
+
     adminer:
       image: adminer
       restart: always

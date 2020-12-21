@@ -10,7 +10,21 @@ var passport = require('passport')
 var pg = require('pg');
 require("dotenv").config();
 
+// console.log(process.env)
+
 const port = 8000
+
+console.log("env: ", process.env);
+
+db
+    .authenticate()
+    .then(() => {
+        console.log('Connection has been established');
+    })
+    .catch(err => {
+        console.error('Unable to connect the database:', err);
+    })
+console.log("connection made");
 
 
 const app = new express();
@@ -32,12 +46,4 @@ passport.deserializeUser(function(user, done) {
 done(null, {id: user.id, email: user.email, role: user.role});
 });
 
-db
-    .authenticate()
-    .then(() => {
-        console.log('Connection has been established');
-    })
-    .catch(err => {
-        console.error('Unable to connect the database:', err);
-    })
 
