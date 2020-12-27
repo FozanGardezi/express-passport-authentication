@@ -9,7 +9,7 @@ services:
         volumes:
         - ./db_data/:/var/lib/postgresql/data
         environment:
-          POSTGRES_PASSWORD: thekillerbot
+          POSTGRES_PASSWORD: pass
           POSTGES_DB: database_development
           POSTGRES_USER: fozan
     backend:

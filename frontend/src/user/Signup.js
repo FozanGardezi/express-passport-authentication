@@ -77,7 +77,7 @@ const Signup = () => {
     const showSuccess = () => {
         return(
             <div className="alert alert-info" style={{display: success ? '': 'none'}}>
-                New account is registered<Link to="/signin">Signin</Link>
+                New account is registered<Link to="/login">Signin</Link>
             </div>
         );
     }

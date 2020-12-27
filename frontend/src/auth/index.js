@@ -48,6 +48,64 @@ export const signout = (next) => {
     
 }
 
+export const decodeJWT = (token) => {
+    return fetch(`${API}/decodeJWT`, {
+        method: "POST",
+        headers: {
+            Accept: 'application/json',
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(token)    
+    })
+    .then( response => {
+        console.log("response from api:",response);
+        return response.json();
+    })
+    .catch(err => {
+        console.log('token decoding error: ',err);
+    })
+}
+
+export const forgotPasswordEmail = (email) => {
+    console.log("email recieved", email);
+    return fetch(`${API}/forgot-password`,{
+      method: "POST",
+      headers: {
+          Accept: 'application/json',
+          "Content-Type": "application/json"
+      },
+      
+      body: JSON.stringify(email)
+    })
+    .then( response => {
+        console.log("email successfully sent:",response);
+        return response.json();
+    })
+    .catch(err => {
+        console.log('error calling email sending api: ',err);
+    })
+}
+
+export const resetPassword = (params) => {
+    console.log("password recieved", params);
+    return fetch(`${API}/reset-password/${params.id}/${params.token}`,{
+      method: "POST",
+      headers: {
+          Accept: 'application/json',
+          "Content-Type": "application/json"
+      },
+      
+      body: JSON.stringify({"password":params.password})
+    })
+    .then( response => {
+        console.log("password succesfully changed :",response);
+        return response.json();
+    })
+    .catch(err => {
+        console.log('error calling email sending api: ',err);
+    })
+}
+
 export const authenticate = (data, next) => {
     if(typeof window !== 'undefined'){
         localStorage.setItem('jwt', JSON.stringify(data));

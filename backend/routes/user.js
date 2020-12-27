@@ -6,7 +6,7 @@ var JwtStrategy = require('passport-jwt').Strategy,
   ExtractJwt = require('passport-jwt').ExtractJwt;
 const models = require( '../models/index');
 var {forgotPasswordEmail, recieveNewPassword} =  require('../controllers/email');
-var {signup, signin} = require('../controllers/user');
+var {signup, signin, decode} = require('../controllers/user');
 
 const fs = require('fs');
 const path = require('path');
@@ -15,8 +15,8 @@ const path = require('path');
 const pathToKey = path.join(__dirname, '..', 'id_rsa256_priv.key');
 const PRIV_KEY = fs.readFileSync(pathToKey, 'utf8');
 
-const path_To_Key = path.join(__dirname, '..', 'id_rsa256_pub.key');
-const PUB_KEY = fs.readFileSync(path_To_Key, 'utf8');
+// const path_To_Key = path.join(__dirname, '..', 'id_rsa256_pub.key');
+// const PUB_KEY = fs.readFileSync(path_To_Key, 'utf8');
 
 const router = express.Router();
 
@@ -56,8 +56,12 @@ router.post('/forgot-password', forgotPasswordEmail);
 
 router.post('/reset-password/:userId/:token', recieveNewPassword);
 
+router.post('/decodeJWT', decode);
+
 router.get('/', passport.authenticate('jwt', { session: false}), (req, res, next) => {
-  res.status(200).json({ success: true, msg: "If successful then auhenticated"});
+    res.send(req.user.profile);
+    next()
+  //  res.status(200).json({ success: true, msg: "If successful then auhenticated"});
 })
 
 

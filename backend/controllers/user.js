@@ -42,7 +42,31 @@ function genJWT(user){
       token: "Bearer " + signedToken,
       expires: expiry
     }
-  }
+}
+
+function decodeJWT(token){
+    var parsedtoken = token.replace('Bearer ', '');
+    const response = jsonwebtoken.decode(parsedtoken);
+    console.log("user id:",response.sub);
+    return response;
+
+}
+
+exports.decode = (req, res) => {
+    console.log("received token:", req.body.token)
+    const response = decodeJWT(req.body.token)
+    console.log("decoded token", response)
+    models.User.findByPk(response.sub)
+    .then((user) => {
+        if(user){
+            return res.status(200).json({id: user._id, firstName: user.firstName, email: user.email})
+        }
+        else{
+            return res.status(404).json({status: "error", msg:"user not found"})
+        }
+
+    })
+}
 
 
 exports.signup = (req, res) => {
@@ -81,17 +105,17 @@ exports.signup = (req, res) => {
 exports.signin = (req,res, next) => {
     models.User.findOne({where :{email: req.body.email} })
     .then((user) => {
-    if (!user) {
-        return res.status(400).json({ success: false, msg: "User not available user" });
-    }
-    const isValid = validPassword(req.body.hashed_password, user.salt, user.hashed_password);
-    
-    if (isValid) {
-        const tokenObject = genJWT(user);
-        return res.status(200).json({ success: true, token: tokenObject.token, expiresIn: tokenObject.expires });
-    } else {
-        return res.status(401).json({ success: false, msg: "Wrong email password entered" });
-    }
+        if (!user) {
+            return res.status(400).json({ success: false, msg: "User does not exists" });
+        }
+        const isValid = validPassword(req.body.hashed_password, user.salt, user.hashed_password);
+        
+        if (isValid) {
+            const tokenObject = genJWT(user);
+            return res.status(200).json({ success: true, token: tokenObject.token, expiresIn: tokenObject.expires });
+        } else {
+            return res.status(401).json({ success: false, msg: "Wrong email password entered" });
+        }
     })
     .catch((err) => {
         next(err);
